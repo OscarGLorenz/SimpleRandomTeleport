@@ -1,0 +1,46 @@
+version: '0.1'
+Cooldown: 10000
+
+Enabled-Worlds:
+  NORMAL:
+    world:
+      Dangerous-Blocks:
+      - LAVA
+      - WATER
+      - STATIONARY_WATER
+      - STATIONARY_LAVA
+      Danger-Area: 2
+      No-Cliff-Area: 2
+      Coordinates:
+        center-x: 0
+        min-x: 0
+        max-x: 100
+        center-z: 0
+        min-z: 0
+        max-z: 100
+  NETHER:
+    world_nether:
+      Dangerous-Blocks:
+      - LAVA
+      - STATIONARY_LAVA
+      - FIRE
+      Danger-Area: 3
+      No-Cliff-Area: 3
+      Coordinates:
+        center-x: 0
+        min-x: 0
+        max-x: 100
+        center-z: 0
+        min-z: 0
+        max-z: 100
+  THE_END:
+    world_the_end:
+      Danger-Area: 0
+      No-Cliff-Area: 2
+      Coordinates:
+        center-x: 0
+        min-x: 0
+        max-x: 100
+        center-z: 0
+        min-z: 0
+        max-z: 100

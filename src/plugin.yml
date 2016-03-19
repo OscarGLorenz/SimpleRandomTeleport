@@ -1,0 +1,9 @@
+main: net.ddns.ogl.RandomTeleport.Main
+name: RandomTeleport
+version: "0.1"
+
+commands:
+  randomteleport:
+    description: Teleports to a random position
+    usage: /randomteleport
+    aliases: rtp
