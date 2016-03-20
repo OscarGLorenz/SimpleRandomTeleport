@@ -17,9 +17,7 @@ import net.ddns.ogl.RandomTeleport.Main;
 import net.md_5.bungee.api.ChatColor;
 
 public class RandomTeleport implements CommandExecutor {
-	private Main plugin;
 	public RandomTeleport(Main pl) {
-		plugin = pl;
 	}
 
 // COOLDOWNS
@@ -89,12 +87,13 @@ public class RandomTeleport implements CommandExecutor {
 	}
 
 	public boolean cooldown(Player player) {
+		if (player.hasPermission("randomteleport.nodelay")) return true;
 		String playerName = player.getName();
 		if (!(existPlayer(playerName))) {	
 			insertCooldown(playerName);
 			return true;
 		}
-		if (getTime(playerName) < plugin.getConfig().getInt("Cooldown")) {
+		if (getTime(playerName) < Main.instance.config.getInt("Cooldown")) {
 			return false;
 		}
 		updateCooldown(playerName);
@@ -105,7 +104,7 @@ public class RandomTeleport implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("[RandomTeleporter] Debes ser un jugador para ejecutar este comando");
+			sender.sendMessage("[RandomTeleporter]" + Main.instance.lang.getString("NO_PLAYER"));
 			return false;
 		}
 
@@ -114,6 +113,7 @@ public class RandomTeleport implements CommandExecutor {
 		if (args.length == 1) {
 			if (args[0].toString().equalsIgnoreCase("tp")) randomTP(player);
 			else if (args[0].toString().equalsIgnoreCase("reload")) reloadCommand(player);
+			else helpCommand(player);
 		} else helpCommand(player);
 		
 		return true;
@@ -123,7 +123,7 @@ public class RandomTeleport implements CommandExecutor {
 // TELEPORT	
 	public void randomTP(Player player){
 		if (player.hasPermission("randomteleport.tp")) {
-			if (plugin.getConfig().contains("Enabled-Worlds." + player.getWorld().getEnvironment().toString() + "." + player.getWorld().getName())){
+			if (Main.instance.config.contains("Enabled-Worlds." + player.getWorld().getEnvironment().toString() + "." + player.getWorld().getName())){
 				if (cooldown(player)) {
 					switch (player.getWorld().getEnvironment().toString()) {
 						case "NORMAL":
@@ -137,15 +137,15 @@ public class RandomTeleport implements CommandExecutor {
 							break;
 					}
 				} else {
-					long timeLeft = ((plugin.getConfig().getInt("Cooldown") - getTime(player.getName()))/1000);
-					printPlayer(ChatColor.RED + "No puedes teletransportarte hasta dentro de " + ChatColor.DARK_RED + timeLeft + 
-						ChatColor.RED + " segundos.", player);
+					long timeLeft = ((Main.instance.config.getInt("Cooldown") - getTime(player.getName()))/1000);
+					printPlayer(Main.instance.lang.getString("COOLDOWN").split("%s")[0] + timeLeft + Main.instance.lang.getString("COOLDOWN").split("%s")[1]
+						, player);
 				}
 			} else {
-				printPlayer(ChatColor.RED + "El teletransporte aleatorio no esta activado en este mundo.", player);
+				printPlayer(Main.instance.lang.getString("WORLD_DISABLED"), player);
 			}
 		} else {
-			printPlayer(ChatColor.RED + "No tienes los permisos necesarios.", player);
+			printPlayer(Main.instance.lang.getString("NO_PERM"), player);
 		}
 	}
 	
@@ -156,12 +156,12 @@ public class RandomTeleport implements CommandExecutor {
 		Location idestiny = new Location(player.getWorld(), x, 100, z);
 		Block block = destiny.getWorld().getBlockAt(x, 100, z);
 		Block iblock = block;
-		int xmin = plugin.getConfig().getInt(dir + ".Coordinates.min-x");
-		int xmax = plugin.getConfig().getInt(dir + ".Coordinates.max-x");
-		int zmin = plugin.getConfig().getInt(dir + ".Coordinates.min-z");
-		int zmax = plugin.getConfig().getInt(dir + ".Coordinates.max-z");
-		int xcenter = plugin.getConfig().getInt(dir + ".Coordinates.center-x");
-		int zcenter = plugin.getConfig().getInt(dir + ".Coordinates.center-z");
+		int xmin = Main.instance.config.getInt(dir + ".Coordinates.min-x");
+		int xmax = Main.instance.config.getInt(dir + ".Coordinates.max-x");
+		int zmin = Main.instance.config.getInt(dir + ".Coordinates.min-z");
+		int zmax = Main.instance.config.getInt(dir + ".Coordinates.max-z");
+		int xcenter = Main.instance.config.getInt(dir + ".Coordinates.center-x");
+		int zcenter = Main.instance.config.getInt(dir + ".Coordinates.center-z");
 		
 		do {
 			x = randomCoord(xmin, xmax , xcenter);
@@ -183,10 +183,7 @@ public class RandomTeleport implements CommandExecutor {
 
 		} while (dangerBlocks(iblock.getType(), dir) || dangerArea(iblock, dir) || dangerCliff(iblock, dir) || airExist(iblock));
 		
-		player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.GOLD + "RandomTeleport"
-				+ ChatColor.DARK_AQUA +"]" + ChatColor.GOLD + " Has sido teletransportado a:"
-			    + ChatColor.GREEN + " X: " + ChatColor.RED + x + ChatColor.GREEN + " Z: " + ChatColor.RED 
-			    + z);
+		printPlayer(Main.instance.lang.getString("TP_RANDOM").split("%s")[0] + x + Main.instance.lang.getString("TP_RANDOM").split("%s")[1] + z ,player);
 		
 		idestiny = new Location(player.getWorld(), x + 0.5, (iblock.getY() + 1), z + 0.5);
 		
@@ -201,13 +198,12 @@ public class RandomTeleport implements CommandExecutor {
 		Location idestiny = new Location(player.getWorld(), x, 255, z);
 		Block block = destiny.getWorld().getBlockAt(x, 255, z);
 		Block iblock = block;
-		int xmin = plugin.getConfig().getInt(dir + ".Coordinates.min-x");
-		int xmax = plugin.getConfig().getInt(dir + ".Coordinates.max-x");
-		int zmin = plugin.getConfig().getInt(dir + ".Coordinates.min-z");
-		int zmax = plugin.getConfig().getInt(dir + ".Coordinates.max-z");
-		int xcenter = plugin.getConfig().getInt(dir + ".Coordinates.center-x");
-		int zcenter = plugin.getConfig().getInt(dir + ".Coordinates.center-z");
-
+		int xmin = Main.instance.config.getInt(dir + ".Coordinates.min-x");
+		int xmax = Main.instance.config.getInt(dir + ".Coordinates.max-x");
+		int zmin = Main.instance.config.getInt(dir + ".Coordinates.min-z");
+		int zmax = Main.instance.config.getInt(dir + ".Coordinates.max-z");
+		int xcenter = Main.instance.config.getInt(dir + ".Coordinates.center-x");
+		int zcenter = Main.instance.config.getInt(dir + ".Coordinates.center-z");
 	
 		do {
 			x = randomCoord(xmin, xmax , xcenter);
@@ -221,10 +217,8 @@ public class RandomTeleport implements CommandExecutor {
 
 		} while (dangerBlocks(iblock.getType(), dir) || dangerArea(iblock, dir) || dangerCliff(iblock, dir));
 	
-		player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.GOLD + "RandomTeleport"
-			+ ChatColor.DARK_AQUA +"]" + ChatColor.GOLD + " Has sido teletransportado a:"
-		    + ChatColor.GREEN + " X: " + ChatColor.RED + x + ChatColor.GREEN + " Z: " + ChatColor.RED 
-		    + z);
+		printPlayer(Main.instance.lang.getString("TP_RANDOM").split("%s")[0] + x + Main.instance.lang.getString("TP_RANDOM").split("%s")[1] + z ,player);
+
 	
 		idestiny = new Location(player.getWorld(), x + 0.5, (iblock.getY() + 1), z + 0.5);
 	
@@ -245,7 +239,7 @@ public class RandomTeleport implements CommandExecutor {
 	
 	public boolean dangerBlocks(Material block, String dir) {
 		
-	    List<String> materials = plugin.getConfig().getStringList(dir + ".Dangerous-Blocks");
+	    List<String> materials = Main.instance.config.getStringList(dir + ".Dangerous-Blocks");
 	    Material material = null;
 	    
 	    for (int i = 0; i < materials.size(); i++) {
@@ -258,7 +252,7 @@ public class RandomTeleport implements CommandExecutor {
 	}
 	
 	public boolean dangerArea(Block iblock, String dir) {
-		int Area = plugin.getConfig().getInt(dir + ".Danger-Area");	
+		int Area = Main.instance.config.getInt(dir + ".Danger-Area");	
 		for (int i = -Area; i <= Area ; i++){
 			for (int j = -Area; j <= Area ; j++) {
 				for (int k = -Area ; k <= Area ; k++) {
@@ -270,7 +264,7 @@ public class RandomTeleport implements CommandExecutor {
 	}
 	
 	public boolean dangerCliff(Block iblock, String dir) {
-		int Area = plugin.getConfig().getInt(dir + ".No-Cliff-Area");
+		int Area = Main.instance.config.getInt(dir + ".No-Cliff-Area");
 		for (int i = -Area; i <= Area ; i++){
 			for (int k = -Area; k <= Area ; k++) {
 					if (iblock.getRelative(i, 0, k).getType() == Material.AIR) return true;
@@ -289,31 +283,31 @@ public class RandomTeleport implements CommandExecutor {
 	// OTHERS
 	public void printPlayer(String string, Player player) {
 		player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.GOLD + "RandomTeleport"
-				+ ChatColor.DARK_AQUA +"] " + string);
+				+ ChatColor.DARK_AQUA +"] " + ChatColor.translateAlternateColorCodes('&', string));
 	}
 	
 	public void reloadCommand(Player player) {
 		if (player.hasPermission("randomteleport.reload")) {
-			plugin.reloadConfig();
-			printPlayer(ChatColor.RED + "Se ha reiniciado la configuración.", player);
+			Main.instance.registerConfig();
+			printPlayer(Main.instance.lang.getString("CONFIG_RELOAD"), player);
 		} else {
-			printPlayer(ChatColor.RED + "No tienes los permisos necesarios.", player);
+			printPlayer(Main.instance.lang.getString("NO_PERM"), player);
 		}
 	}
 	
 	public void helpCommand(Player player) {
 		player.sendMessage(ChatColor.GRAY + "\n\n-----------------------------------------------------\n"
 			    + ChatColor.YELLOW + ChatColor.BOLD + "Simple" + ChatColor.GOLD + ChatColor.BOLD + "Random" +
-				ChatColor.YELLOW + ChatColor.BOLD +"Teleport v." + plugin.getConfig().getString("version") + "\n" + ChatColor.GRAY + "-----------------------------------------------------\n"
+				ChatColor.YELLOW + ChatColor.BOLD +"Teleport" + ChatColor.RED + ChatColor.BOLD + " v." + Main.instance.config.getString("version") + "\n" + ChatColor.GRAY + "-----------------------------------------------------\n"
 				+ ChatColor.YELLOW + "/rtp tp " + ChatColor.GOLD + 
-				"Teletransporte a un punto aleatorio en este mundo\n"
+				Main.instance.lang.getString("HELP_TP") + "\n"
 				+ ChatColor.YELLOW + "/rtp help " + ChatColor.GOLD + 
-				"Muestra este menú de ayuda" + ChatColor.GRAY
-				+ ChatColor.YELLOW + "/rtp reload " + ChatColor.GOLD + 
-				"Recarga la configuración" + ChatColor.GRAY + 
-				"\n-----------------------------------------------------\n" +
-				ChatColor.GRAY + "Desarrollado por" + ChatColor.GREEN + ChatColor.BOLD + " ospa555" +
-				"\n-----------------------------------------------------\n" 
+				Main.instance.lang.getString("HELP_HELP") + "\n" + ChatColor.GRAY
+				+ ChatColor.YELLOW + "/rtp reload " + ChatColor.GOLD + Main.instance.lang.getString("HELP_RELOAD") +
+				"\n" + ChatColor.GRAY + 
+				"-----------------------------------------------------\n" + ChatColor.GOLD +
+				Main.instance.lang.getString("HELP_DEV") + ChatColor.GREEN + ChatColor.BOLD + " ospa555\n" + ChatColor.GRAY +
+				"-----------------------------------------------------\n" 
 				);
 	}
 }
