@@ -1,5 +1,5 @@
 # SimpleRandomTeleport
-A Teleport plugin for Bukkit. Overworld, Nether and The End. [1.8.8] and [1.9]
+A Teleport plugin for Spigot. Overworld, Nether and The End. [1.8.8] and [1.9]
 
 
 Features:
