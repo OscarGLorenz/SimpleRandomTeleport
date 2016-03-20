@@ -20,11 +20,11 @@ public class Main extends JavaPlugin {
 		registerCommands();
 		registerConfig();
 		Logger logger = Logger.getLogger("Minecraft");
-		logger.info("[RandomTeleporter]" + lang.getString("CONSOLE_MESSAGE_ENABLED").split("%s")[0] + config.getString("version") + lang.getString("CONSOLE_MESSAGE_ENABLED").split("%s")[1]);		    
+		logger.info("[SimpleRandomTeleporter] " + lang.getString("CONSOLE_MESSAGE_ENABLED").split("%s")[0] + config.getString("version") + lang.getString("CONSOLE_MESSAGE_ENABLED").split("%s")[1]);		    
 	}
 	public void onDisable() {
 		Logger logger = Logger.getLogger("Minecraft");
-		logger.info("[RandomTeleporter]" + lang.getString("CONSOLE_MESSAGE_DISABLED").split("%s")[0] + config.getString("version") + lang.getString("CONSOLE_MESSAGE_DISABLED").split("%s")[1]);		    
+		logger.info("[SimpleRandomTeleporter]" + lang.getString("CONSOLE_MESSAGE_DISABLED").split("%s")[0] + config.getString("version") + lang.getString("CONSOLE_MESSAGE_DISABLED").split("%s")[1]);		    
 	}
 	public void registerCommands() {
 		getCommand("randomteleport").setExecutor(new RandomTeleport(this));

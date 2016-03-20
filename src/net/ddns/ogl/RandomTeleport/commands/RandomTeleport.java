@@ -104,7 +104,7 @@ public class RandomTeleport implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
 		if (!(sender instanceof Player)) {
-			sender.sendMessage("[RandomTeleporter]" + Main.instance.lang.getString("NO_PLAYER"));
+			sender.sendMessage("[SimpleRandomTeleporter]" + Main.instance.lang.getString("NO_PLAYER"));
 			return false;
 		}
 
@@ -282,7 +282,7 @@ public class RandomTeleport implements CommandExecutor {
 
 	// OTHERS
 	public void printPlayer(String string, Player player) {
-		player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.GOLD + "RandomTeleport"
+		player.sendMessage(ChatColor.DARK_AQUA + "[" + ChatColor.GOLD + "SimpleRandomTeleport"
 				+ ChatColor.DARK_AQUA +"] " + ChatColor.translateAlternateColorCodes('&', string));
 	}
 	
